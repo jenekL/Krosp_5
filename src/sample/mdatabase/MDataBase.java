@@ -39,7 +39,7 @@ public class MDataBase {
         return new MDataBase();
     }
 
-    public void createEntity(){
+    public ObservableList<TableData> createEntity(){
         try {
             rs = stmt.executeQuery("SELECT * FROM тПродажа");
             ResultSetMetaData resultSetMetaData = rs.getMetaData();
@@ -52,19 +52,19 @@ public class MDataBase {
 
                 //Zakupka z =  new Zakupka(resZakup.getString(2), Float.parseFloat(resZakup.getString(3)),resZakup.getString(4));
                 //Klients k = new Klients(resKlient.getString(2), resKlient.getString(3),resKlient.getString(4), Integer.parseInt(resKlient.getString(5)));
-
-                tableData.add(new Prodaja(Integer.parseInt(rs.getString(1)), rs.getString(2), Integer.parseInt(rs.getString(3)),
-                        new Klients(resKlient.getString(2), resKlient.getString(3),resKlient.getString(4), Integer.parseInt(resKlient.getString(5))),
-                        new Zakupka(resZakup.getString(2), Float.parseFloat(resZakup.getString(3)),resZakup.getString(4))));
-                System.out.println(Integer.parseInt(rs.getString(1)) + rs.getString(2) + Integer.parseInt(rs.getString(3)));
-
+                while(resZakup.next() && resKlient.next()) {
+                    tableData.add(new Prodaja(Integer.parseInt(rs.getString(1)), rs.getString(2), Integer.parseInt(rs.getString(3)),
+                            new Klients(resKlient.getString(2), resKlient.getString(3), resKlient.getString(4), Integer.parseInt(resKlient.getString(5))),
+                            new Zakupka(resZakup.getString(2), Float.parseFloat(resZakup.getString(3)), resZakup.getString(4))));
+                    System.out.println(Integer.parseInt(rs.getString(1)) + rs.getString(2) + Integer.parseInt(rs.getString(3)));
+                }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        //return tableData;
+        return tableData;
     }
 
 
@@ -99,6 +99,7 @@ public class MDataBase {
 
 
     public void addRow(String tableName) throws SQLException {
+
         rs = stmt.executeQuery("SELECT * FROM " + tableName);
         ResultSetMetaData resultSetMetaData = rs.getMetaData();
         String name = "INSERT INTO " + tableName + "(";
@@ -132,7 +133,7 @@ public class MDataBase {
 
     public void deleteRow(String tableName, int num) throws SQLException {
 
-        String sql = "delete from тзакупка where тзакупка.Код_товара = " + num;
+        String sql = "delete from "+ tableName + " where " + tableName + ".Код_соглашения = " + num;
 
         PreparedStatement stmt = connection.prepareStatement(sql);
 

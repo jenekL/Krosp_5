@@ -18,6 +18,14 @@ public class Prodaja implements TableData {
         this.zakupka = zakupka;
     }
 
+    public String getFirm() {
+        return klients.getFirm();
+    }
+
+    public String getName() {
+        return zakupka.getName();
+    }
+
     public String getDate() {
         return date;
     }
