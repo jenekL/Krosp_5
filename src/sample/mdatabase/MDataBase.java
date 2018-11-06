@@ -11,7 +11,6 @@ import java.sql.*;
 
 public class MDataBase {
     private final String URL = "jdbc:mysql://localhost:3306/krosp_lab5?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-   // private final String URL = "jdbc:mysql://localhost:3306/krosp_lab5";
     private final String NAME = "root";
     private final String PASS = "123ALOALOPRIVATEnetrogayte123";
     private Statement stmt;
@@ -19,11 +18,9 @@ public class MDataBase {
     private Statement stmt2;
     private Connection connection;
     private ResultSet rs;
-   // private DataFromBase dataFromBase;
     private ObservableList<TableData> tableData = FXCollections.observableArrayList();
 
     public MDataBase() {
-     //   this.dataFromBase = dataFromBase;
         try {
             connection = DriverManager.getConnection(URL, NAME, PASS);
             stmt = connection.createStatement();
@@ -35,8 +32,9 @@ public class MDataBase {
         }
     }
 
+    private static MDataBase instance = new MDataBase();
     public static MDataBase getInstance() {
-        return new MDataBase();
+        return instance;
     }
 
     public ObservableList<TableData> createEntity(){
@@ -50,8 +48,6 @@ public class MDataBase {
                 ResultSet resZakup = stmt1.executeQuery("SELECT * FROM тзакупка where Код_товара = " + rs.getString(4));
                 ResultSet resKlient = stmt2.executeQuery("SELECT * FROM тклиенты where Код_клиента = " + rs.getString(5));
 
-                //Zakupka z =  new Zakupka(resZakup.getString(2), Float.parseFloat(resZakup.getString(3)),resZakup.getString(4));
-                //Klients k = new Klients(resKlient.getString(2), resKlient.getString(3),resKlient.getString(4), Integer.parseInt(resKlient.getString(5)));
                 while(resZakup.next() && resKlient.next()) {
                     tableData.add(new Prodaja(Integer.parseInt(rs.getString(1)), rs.getString(2), Integer.parseInt(rs.getString(3)),
                             new Klients(resKlient.getString(2), resKlient.getString(3), resKlient.getString(4), Integer.parseInt(resKlient.getString(5))),
@@ -67,38 +63,30 @@ public class MDataBase {
         return tableData;
     }
 
+//    public void showTable(String tableName) {
+//
+//        try {
+//            String[] data = new String[5];
+//            rs = stmt.executeQuery("SELECT * FROM " + tableName);
+//            ResultSetMetaData resultSetMetaData = rs.getMetaData();
+//            String str = " ";
+//            System.out.println(resultSetMetaData.getColumnCount());
+//            while (rs.next()) {
+//                str = " ";
+//                for(int i = 1; i <= resultSetMetaData.getColumnCount(); i++ ) {
+//                    data[i-1] = rs.getString(i);
+//                    str += rs.getString(i)+ " ";
+//                }
+//
+//                System.out.println("Продукция:" + str);
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-    public void showTable(String tableName) {
-
-        try {
-            String[] data = new String[5];
-            rs = stmt.executeQuery("SELECT * FROM " + tableName);
-            ResultSetMetaData resultSetMetaData = rs.getMetaData();
-            String str = " ";
-            System.out.println(resultSetMetaData.getColumnCount());
-            while (rs.next()) {
-                str = " ";
-                for(int i = 1; i <= resultSetMetaData.getColumnCount(); i++ ) {
-                    data[i-1] = rs.getString(i);
-                    str += rs.getString(i)+ " ";
-                }
-
-                System.out.println("Продукция:" + str);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        // rs.close();
-        // stmt.close();
-
-
-        // connection.close();
-    }
-
-
-
-    public void addRow(String tableName) throws SQLException {
+    public void addRow(String tableName, String[] data) throws SQLException {
 
         rs = stmt.executeQuery("SELECT * FROM " + tableName);
         ResultSetMetaData resultSetMetaData = rs.getMetaData();
@@ -126,7 +114,8 @@ public class MDataBase {
 
         for(int i = 1; i < resultSetMetaData.getColumnCount(); i++) {
 
-            stmt.setString(i, "2");
+            stmt.setString(i, data[i-1]);
+
         }
         stmt.executeUpdate();
     }
@@ -140,15 +129,15 @@ public class MDataBase {
         stmt.executeUpdate();
     }
 
-//    public void close(){
-//        try {
-//            rs.close();
-//            stmt.close();
-//            connection.close();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println("closed");
-//    }
+    public void close(){
+        try {
+            //rs.close();
+            //stmt.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println("closed");
+    }
 }
 
