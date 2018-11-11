@@ -23,7 +23,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 
 public class Controller {
-    private MDataBase mDataBase = new MDataBase();
+    private MDataBase mDataBase = MDataBase.getInstance();
 
     @FXML
     private TableView<TableData> tb1;
@@ -53,6 +53,8 @@ public class Controller {
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.show();
+
+            tb1.getItems().clear();
         });
 
         refbtn1.setOnAction(actionEvent -> {
@@ -92,15 +94,8 @@ public class Controller {
         firmColumn.setMinWidth(150);
         firmColumn.setCellValueFactory(new PropertyValueFactory<>("firm"));
 
-        //mDataBase.createEntity();
-        //tb1.setItems(getData());
-
         tb1.setItems(mDataBase.createEntity());
-        //tb1.getItems().addAll(getData());
-        //tb1.getItems().addAll(mDataBase.createEntity());
         tb1.getColumns().addAll(idColumn, dateColumn, quantityColumn, nameColumn, firmColumn);
-
-        //System.out.println(tb1.getSelectionModel().getFocusedIndex());
     }
 
 }

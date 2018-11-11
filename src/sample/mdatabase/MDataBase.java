@@ -19,8 +19,9 @@ public class MDataBase {
     private Connection connection;
     private ResultSet rs;
     private ObservableList<TableData> tableData = FXCollections.observableArrayList();
+    private static MDataBase instance;
 
-    public MDataBase() {
+    private MDataBase() {
         try {
             connection = DriverManager.getConnection(URL, NAME, PASS);
             stmt = connection.createStatement();
@@ -32,8 +33,10 @@ public class MDataBase {
         }
     }
 
-    private static MDataBase instance = new MDataBase();
-    public static MDataBase getInstance() {
+    public static synchronized MDataBase getInstance() {
+        if(instance == null){
+            instance = new MDataBase();
+        }
         return instance;
     }
 
@@ -88,29 +91,29 @@ public class MDataBase {
 
     public void addRow(String tableName, String[] data) throws SQLException {
 
-        rs = stmt.executeQuery("SELECT * FROM " + tableName);
+        rs = stmt.executeQuery("SELECT * FROM " + tableName + " LIMIT 0, 0");
         ResultSetMetaData resultSetMetaData = rs.getMetaData();
-        String name = "INSERT INTO " + tableName + "(";
+        StringBuilder name = new StringBuilder("INSERT INTO " + tableName + "(");
         for(int i = 2; i <= resultSetMetaData.getColumnCount(); i++) {
             if(i == resultSetMetaData.getColumnCount()){
-                name += resultSetMetaData.getColumnName(i);
+                name.append(resultSetMetaData.getColumnName(i));
                 break;
             }
-            name += resultSetMetaData.getColumnName(i) + ", ";
+            name.append(resultSetMetaData.getColumnName(i)).append(", ");
         }
-        name += ") VALUES (";
+        name.append(") VALUES (");
         for(int i = 2; i <= resultSetMetaData.getColumnCount(); i++) {
             if(i == resultSetMetaData.getColumnCount()){
-                name += "?";
+                name.append("?");
                 break;
             }
-            name += "?,";
+            name.append("?,");
         }
-        name += ")";
+        name.append(")");
 
         System.out.println(name);
 
-        PreparedStatement stmt = connection.prepareStatement(name);
+        PreparedStatement stmt = connection.prepareStatement(name.toString());
 
         for(int i = 1; i < resultSetMetaData.getColumnCount(); i++) {
 
