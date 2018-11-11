@@ -125,7 +125,10 @@ public class MDataBase {
 
     public void deleteRow(String tableName, int num) throws SQLException {
 
-        String sql = "delete from "+ tableName + " where " + tableName + ".Код_соглашения = " + num;
+        rs = stmt.executeQuery("SELECT * FROM " + tableName + " LIMIT 0, 0");
+        ResultSetMetaData resultSetMetaData = rs.getMetaData();
+
+        String sql = "delete from "+ tableName + " where " + tableName + "." + resultSetMetaData.getColumnName(1) + " = " + num;
 
         PreparedStatement stmt = connection.prepareStatement(sql);
 
