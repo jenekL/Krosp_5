@@ -1,7 +1,6 @@
 package sample.data;
 
 
-import java.sql.Date;
 
 public class Prodaja implements TableData {
     private int id;
